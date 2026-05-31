@@ -1,0 +1,4 @@
+# Rename the file to .env and add the values
+
+API_FOOTBALL_KEY="<YOUR_API_KEY>"
+API_BASE_URL="<YOUR_API_URL>"
