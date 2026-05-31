@@ -1,0 +1,29 @@
+# Create catalog
+spark.sql("""
+CREATE CATALOG IF NOT EXISTS fifa_worldcup
+""")
+
+# Use catalog
+spark.sql("""
+USE CATALOG fifa_worldcup
+""")
+
+# Create schemas
+spark.sql("""
+CREATE SCHEMA IF NOT EXISTS bronze
+""")
+
+spark.sql("""
+CREATE SCHEMA IF NOT EXISTS silver
+""")
+
+spark.sql("""
+CREATE SCHEMA IF NOT EXISTS gold
+""")
+
+# Verify
+display(
+    spark.sql("""
+    SHOW SCHEMAS IN fifa_worldcup
+    """)
+)
