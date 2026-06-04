@@ -11,4 +11,4 @@ env:
     valueFrom: table
 
   - name: DATABRICKS_WAREHOUSE_ID
-    valueFrom: warehouse
+    valueFrom: sql-warehouse
