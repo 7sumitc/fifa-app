@@ -5,6 +5,11 @@
 bundle:
   name: fifa-app
 
+resources:
+  apps:
+    fifa-world-cup-predictor:
+      name: fifa-world-cup-predictor
+
 targets:
   dev:
     mode: development
