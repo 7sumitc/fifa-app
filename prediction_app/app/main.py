@@ -4,11 +4,10 @@ from fastapi import Request
 
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-
 from fastapi.templating import Jinja2Templates
 
+from predictor import get_fixtures
 from predictor import get_prediction
-from predictor import get_teams
 
 app = FastAPI(
     title="FIFA World Cup Predictor"
@@ -19,7 +18,6 @@ app.mount(
     StaticFiles(directory="static"),
     name="static"
 )
-
 templates = Jinja2Templates(
     directory="templates"
 )
@@ -32,12 +30,13 @@ templates = Jinja2Templates(
 async def home(
     request: Request
 ):
+    fixtures = get_fixtures()
 
     return templates.TemplateResponse(
         request=request,
         name="index.html",
         context={
-            "teams": get_teams(),
+            "fixtures": fixtures,
             "prediction": None
         }
     )
@@ -49,22 +48,34 @@ async def home(
 )
 async def predict(
     request: Request,
-    home_team: str = Form(...),
-    away_team: str = Form(...)
+    fixture: str = Form(...)
 ):
+
+    home_team, away_team = fixture.split(
+        "|||"
+    )
 
     prediction = get_prediction(
         home_team,
         away_team
     )
 
+    fixtures = get_fixtures()
+
     return templates.TemplateResponse(
         request=request,
         name="index.html",
         context={
-            "teams": get_teams(),
+            "fixtures": fixtures,
             "home_team": home_team,
             "away_team": away_team,
             "prediction": prediction
         }
     )
+
+
+@app.get("/health")
+def health():
+    return {
+        "status": "healthy"
+    }

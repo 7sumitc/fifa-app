@@ -14,24 +14,20 @@
 
     <form action="/predict" method="post">
 
-        <label>Home Team</label>
+        <label>Fixture</label>
 
-        <select name="home_team">
-            {% for team in teams %}
-            <option value="{{ team }}">
-                {{ team }}
+        <select name="fixture">
+
+            {% for fixture in fixtures %}
+
+            <option
+                value="{{ fixture.home_team }}|||{{ fixture.away_team }}"
+            >
+                {{ fixture.label }}
             </option>
-            {% endfor %}
-        </select>
 
-        <label>Away Team</label>
-
-        <select name="away_team">
-            {% for team in teams %}
-            <option value="{{ team }}">
-                {{ team }}
-            </option>
             {% endfor %}
+
         </select>
 
         <button type="submit">

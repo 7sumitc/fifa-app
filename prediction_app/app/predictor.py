@@ -3,7 +3,7 @@ import os
 from databricks.sdk import WorkspaceClient
 
 
-def get_teams():
+def get_fixtures():
     try:
         w = WorkspaceClient()
 
@@ -17,15 +17,13 @@ def get_teams():
             w.statement_execution.execute_statement(
                 warehouse_id=warehouse_id,
                 statement=f"""
-                    SELECT DISTINCT team
-                    FROM (
-                        SELECT home_team AS team
-                        FROM {table_name}
-                        UNION
-                        SELECT away_team AS team
-                        FROM {table_name}
-                    )
-                    ORDER BY team
+                    SELECT
+                        home_team,
+                        away_team
+                    FROM {table_name}
+                    WHERE stage = 'Group Stage'
+                    ORDER BY match_date,
+                            match_time
                 """,
                 wait_timeout="30s"
             )
@@ -33,8 +31,16 @@ def get_teams():
         if not response.result:
             return "No Data"
         
-        rows = response.result.data_array
-        return [row[0] for row in rows]
+        fixtures = []
+
+        for row in rows:
+            fixtures.append({
+                "label": f"{row[0]} vs {row[1]}",
+                "home_team": row[0],
+                "away_team": row[1]
+            })
+        return fixtures
+    
     except Exception as e:
         return [str(e)]
 
@@ -69,11 +75,16 @@ def get_prediction(
 
         if not rows:
             return "No Prediction"
-        return {
-            "H": "Home Win",
-            "D": "Draw",
-            "A": "Away Win"
-        }.get(
+        
+        result = rows[0][0]
+
+        mapping = {
+            "H": "🏠 Home Win",
+            "D": "🤝 Draw",
+            "A": "✈️ Away Win"
+        }
+
+        return mapping.get(
             result,
             result
         )
