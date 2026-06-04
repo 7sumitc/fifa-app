@@ -1,32 +1,62 @@
-PREDICTIONS = {
-    ("Argentina", "France"): "H",
-    ("Brazil", "England"): "H",
-    ("Mexico", "USA"): "D"
-}
+import os
 
-TEAMS = [
-    "Argentina",
-    "Brazil",
-    "England",
-    "France",
-    "Mexico",
-    "USA"
-]
+from databricks.sdk import WorkspaceClient
 
 
 def get_teams():
-    return sorted(TEAMS)
 
+    w = WorkspaceClient()
 
-def get_prediction(home_team, away_team):
+    table_name = os.getenv("UC_TABLE_NAME")
+    warehouse_id = os.getenv("DATABRICKS_WAREHOUSE_ID")
 
-    if home_team == away_team:
-        return "Choose different teams"
+    response = w.statement_execution.execute_statement(
+        warehouse_id=warehouse_id,
+        statement=f"""
+        SELECT DISTINCT home_team AS team
+        FROM {table_name}
 
-    prediction = PREDICTIONS.get(
-        (home_team, away_team),
-        "H"
+        UNION
+
+        SELECT DISTINCT away_team AS team
+        FROM {table_name}
+
+        ORDER BY team
+        """
     )
+
+    rows = response.result.data_array
+
+    return [row[0] for row in rows]
+
+
+def get_prediction(
+    home_team: str,
+    away_team: str
+):
+
+    w = WorkspaceClient()
+
+    table_name = os.getenv("UC_TABLE_NAME")
+    warehouse_id = os.getenv("DATABRICKS_WAREHOUSE_ID")
+
+    response = w.statement_execution.execute_statement(
+        warehouse_id=warehouse_id,
+        statement=f"""
+        SELECT predicted_result
+        FROM {table_name}
+        WHERE home_team = '{home_team}'
+          AND away_team = '{away_team}'
+        LIMIT 1
+        """
+    )
+
+    rows = response.result.data_array
+
+    if not rows:
+        return "No Prediction"
+
+    result = rows[0][0]
 
     mapping = {
         "H": "Home Win",
@@ -34,4 +64,7 @@ def get_prediction(home_team, away_team):
         "A": "Away Win"
     }
 
-    return mapping[prediction]
+    return mapping.get(
+        result,
+        result
+    )
