@@ -5,3 +5,10 @@ command:
   - 0.0.0.0
   - --port
   - "8000"
+
+env:
+  - name: UC_TABLE_NAME
+    valueFrom: table
+
+  - name: DATABRICKS_WAREHOUSE_ID
+    valueFrom: warehouse
