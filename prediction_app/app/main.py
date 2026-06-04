@@ -74,6 +74,11 @@ async def predict(
     )
 
 
+@app.get("/debug-fixtures")
+def debug_fixtures():
+    return get_fixtures()
+
+
 @app.get("/health")
 def health():
     return {

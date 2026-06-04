@@ -31,14 +31,20 @@ def get_fixtures():
         if not response.result:
             return "No Data"
         
-        fixtures = []
+        rows = response.result.data_array
 
+        fixtures = []
         for row in rows:
-            fixtures.append({
-                "label": f"{row[0]} vs {row[1]}",
-                "home_team": row[0],
-                "away_team": row[1]
-            })
+            home_team = str(row[0])
+            away_team = str(row[1])
+
+            fixtures.append(
+                {
+                    "label": f"{home_team} vs {away_team}",
+                    "home_team": home_team,
+                    "away_team": away_team
+                }
+            )
         return fixtures
     
     except Exception as e:

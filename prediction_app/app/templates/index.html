@@ -3,20 +3,30 @@
 
 <head>
     <title>FIFA World Cup Predictor</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
 </head>
 
 <body>
 
 <div class="container">
 
-    <h1>⚽ FIFA World Cup Predictor</h1>
+    <h1>
+        ⚽ FIFA World Cup Predictor
+    </h1>
 
-    <form action="/predict" method="post">
+    <form
+        action="/predict"
+        method="post"
+    >
 
-        <label>Fixture</label>
+        <label>
+            Fixture
+        </label>
 
-        <select name="fixture">
+        <select name="fixture" required>
 
             {% for fixture in fixtures %}
 
