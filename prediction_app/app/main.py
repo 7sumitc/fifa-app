@@ -9,6 +9,8 @@ from fastapi.templating import Jinja2Templates
 from predictor import get_fixtures
 from predictor import get_prediction
 
+import os
+
 app = FastAPI(
     title="FIFA World Cup Predictor"
 )
@@ -72,6 +74,14 @@ async def predict(
             "prediction": prediction
         }
     )
+
+
+@app.get("/debug-env")
+def debug_env():
+    return {
+        "UC_TABLE_NAME": os.getenv("UC_TABLE_NAME"),
+        "DATABRICKS_WAREHOUSE_ID": os.getenv("DATABRICKS_WAREHOUSE_ID")
+    }
 
 
 @app.get("/debug-fixtures")

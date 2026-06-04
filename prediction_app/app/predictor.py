@@ -21,31 +21,15 @@ def get_fixtures():
                         home_team,
                         away_team
                     FROM {table_name}
-                    WHERE stage = 'Group Stage'
-                    ORDER BY match_date,
-                            match_time
                 """,
                 wait_timeout="30s"
             )
         )
-        if not response.result:
-            return "No Data"
-        
-        rows = response.result.data_array
-
-        fixtures = []
-        for row in rows:
-            home_team = str(row[0])
-            away_team = str(row[1])
-
-            fixtures.append(
-                {
-                    "label": f"{home_team} vs {away_team}",
-                    "home_team": home_team,
-                    "away_team": away_team
-                }
-            )
-        return fixtures
+        return [{
+            "label": str(response),
+            "home_team": "",
+            "away_team": ""
+        }]
     
     except Exception as e:
         return [str(e)]
