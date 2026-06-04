@@ -76,6 +76,26 @@ async def predict(
     )
 
 
+@app.get("/debug-query")
+def debug_query():
+
+    w = WorkspaceClient()
+    response = (
+        w.statement_execution.execute_statement(
+            warehouse_id=os.getenv(
+                "DATABRICKS_WAREHOUSE_ID"
+            ),
+            statement=f"""
+                SELECT *
+                FROM {os.getenv('UC_TABLE_NAME')}
+                LIMIT 5
+            """,
+            wait_timeout="30s"
+        )
+    )
+    return str(response)
+
+
 @app.get("/debug-env")
 def debug_env():
     return {
@@ -86,7 +106,7 @@ def debug_env():
 
 @app.get("/debug-fixtures")
 def debug_fixtures():
-    return get_fixtures()
+    return get_fixtures()[:5]
 
 
 @app.get("/health")

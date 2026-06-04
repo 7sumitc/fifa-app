@@ -17,22 +17,45 @@ def get_fixtures():
             w.statement_execution.execute_statement(
                 warehouse_id=warehouse_id,
                 statement=f"""
-                    SELECT
-                        home_team,
-                        away_team
+                    SELECT home_team,
+                           away_team
                     FROM {table_name}
+                    WHERE stage = 'Group Stage'
+                    ORDER BY match_date,
+                            match_time
                 """,
                 wait_timeout="30s"
             )
         )
-        return [{
-            "label": str(response),
-            "home_team": "",
-            "away_team": ""
-        }]
-    
+
+        statement_id = response.statement_id
+        result = (
+            w.statement_execution.get_statement(
+                statement_id
+            )
+        )
+
+        rows = result.result.data_array
+        fixtures = []
+
+        for row in rows:
+            fixtures.append(
+                {
+                    "label": f"{row[0]} vs {row[1]}",
+                    "home_team": row[0],
+                    "away_team": row[1]
+                }
+            )
+        return fixtures
+
     except Exception as e:
-        return [str(e)]
+        return [
+            {
+                "label": str(e),
+                "home_team": "",
+                "away_team": ""
+            }
+        ]
 
 
 def get_prediction(
